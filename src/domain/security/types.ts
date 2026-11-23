@@ -1,8 +1,8 @@
-import type { Brand, FamilyTreeId } from '../shared/ids';
+import type { Brand, FamilyTreeId, UserId } from '../shared/ids';
  
 export type Base64 = Brand<string, 'Base64'>;
  
-/** AES-256-GCM output. The GCM auth tag is appended to the ciphertext. */
+/** AES-256-GCM output. The 128-bit GCM auth tag is appended to the ciphertext. */
 export interface EncryptedPayload {
   readonly version: 1;
   readonly algorithm: 'AES-256-GCM';
@@ -23,21 +23,42 @@ export type KdfParams =
       readonly kdf: 'pbkdf2-sha256';
       readonly salt: Base64;
       readonly iterations: number;
+    }
+  /** Only for high-entropy secrets (the recovery code). Never for passwords. */
+  | {
+      readonly kdf: 'hkdf-sha256';
+      readonly salt: Base64;
     };
  
 /**
- * A secret key wrapped (encrypted) under a key derived from a password or recovery code.
- * Parameters are stored so they can be raised later without breaking old accounts.
+ * A key wrapped under a key derived from a secret. The KDF parameters travel with it
+ * so they can be strengthened later without breaking existing accounts.
  */
 export interface KeyEnvelope {
   readonly kdf: KdfParams;
   readonly wrappedKey: EncryptedPayload;
 }
  
-/** A tree's data key, wrapped under the user's account key. `keyVersion` supports rotation. */
+/**
+ * A key encrypted to a recipient's public key (ECIES-style "sealed box"):
+ * ephemeral ECDH P-256 -> HKDF-SHA256 -> AES-256-GCM.
+ * Anyone holding the key can seal it to any public key; only the recipient can open it.
+ */
+export interface SealedKey {
+  readonly version: 1;
+  readonly algorithm: 'ECDH-P256+HKDF-SHA256+AES-256-GCM';
+  /** SPKI DER, Base64. */
+  readonly ephemeralPublicKey: Base64;
+  readonly iv: Base64;
+  readonly ciphertext: Base64;
+}
+ 
+/** Gives one user access to one version of one tree key. Written once, never edited. */
 export interface TreeKeyGrant {
   readonly treeId: FamilyTreeId;
   readonly keyVersion: number;
-  readonly wrappedTreeKey: EncryptedPayload;
+  readonly recipientId: UserId;
+  readonly grantedBy: UserId;
+  readonly sealedTreeKey: SealedKey;
 }
  
