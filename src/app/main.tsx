@@ -1,12 +1,12 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-import '@presentation/styles/global.css';
-import { App } from './App';
+import "@presentation/styles/global.css";
+import { App } from "./App";
 
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 if (!container) {
-  throw new Error('Root element #root not found');
+  throw new Error("Root element #root not found");
 }
 
 createRoot(container).render(

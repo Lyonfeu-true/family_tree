@@ -1,7 +1,7 @@
-import type { DeviceId, FamilyTreeId } from '../shared/ids';
-import type { HlcTimestamp } from '../shared/hlc';
+import type { DeviceId, FamilyTreeId } from "../shared/ids";
+import type { HlcTimestamp } from "../shared/hlc";
 
-export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'error';
+export type SyncStatus = "idle" | "syncing" | "offline" | "error";
 
 /** Identifies one remote file and the version we last saw (GitHub blob SHA). */
 export interface RemoteFileRef {

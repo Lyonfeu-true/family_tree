@@ -1,4 +1,4 @@
-import type { DeviceId, FamilyTreeId, PhotoId, UserId } from '../shared/ids';
+import type { DeviceId, FamilyTreeId, PhotoId, UserId } from "../shared/ids";
 
 /**
  * Additional Authenticated Data builders.
@@ -8,7 +8,7 @@ import type { DeviceId, FamilyTreeId, PhotoId, UserId } from '../shared/ids';
  * to another file, tree, user or key version: decryption fails instead.
  * Every call site uses these builders, never ad-hoc strings.
  */
-const P = 'ft1'; // format prefix, bump when the AAD scheme changes
+const P = "ft1"; // format prefix, bump when the AAD scheme changes
 
 export const aad = {
   accountKey: (user: UserId): string => `${P}|account-key|${user}`,

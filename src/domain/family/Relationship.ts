@@ -1,33 +1,42 @@
-import type { FamilyMemberId, FamilyTreeId, RelationshipId } from '../shared/ids';
-import type { HlcTimestamp, LwwRecord } from '../shared/hlc';
-import type { PartialDate } from './PartialDate';
+import type {
+  FamilyMemberId,
+  FamilyTreeId,
+  RelationshipId,
+} from "../shared/ids";
+import type { HlcTimestamp, LwwRecord } from "../shared/hlc";
+import type { PartialDate } from "./PartialDate";
 
 export const BUILTIN_RELATIONSHIP_TYPES = [
   // family
-  'father',
-  'mother',
-  'son',
-  'daughter',
-  'brother',
-  'sister',
+  "father",
+  "mother",
+  "son",
+  "daughter",
+  "brother",
+  "sister",
   // romantic
-  'married',
-  'engaged',
-  'relationship',
-  'former_relationship',
-  'divorced',
+  "married",
+  "engaged",
+  "relationship",
+  "former_relationship",
+  "divorced",
   // other
-  'other',
+  "other",
 ] as const;
 
-export type BuiltinRelationshipType = (typeof BUILTIN_RELATIONSHIP_TYPES)[number];
+export type BuiltinRelationshipType =
+  (typeof BUILTIN_RELATIONSHIP_TYPES)[number];
 
-export type RelationshipCategory = 'family' | 'romantic' | 'other';
+export type RelationshipCategory = "family" | "romantic" | "other";
 
 /** A built-in type, or a user-defined label with an optional colour override. */
 export type RelationshipKind =
-  | { readonly kind: 'builtin'; readonly type: BuiltinRelationshipType }
-  | { readonly kind: 'custom'; readonly label: string; readonly colorHex: string | null };
+  | { readonly kind: "builtin"; readonly type: BuiltinRelationshipType }
+  | {
+      readonly kind: "custom";
+      readonly label: string;
+      readonly colorHex: string | null;
+    };
 
 /**
  * Edge semantics: a relationship from A to B reads "A is the {type} of B".
@@ -49,18 +58,22 @@ export interface RelationshipTypeDefinition {
 export const RELATIONSHIP_TYPE_DEFINITIONS: Readonly<
   Record<BuiltinRelationshipType, RelationshipTypeDefinition>
 > = {
-  father: { category: 'family', generationOffset: -1, symmetric: false },
-  mother: { category: 'family', generationOffset: -1, symmetric: false },
-  son: { category: 'family', generationOffset: 1, symmetric: false },
-  daughter: { category: 'family', generationOffset: 1, symmetric: false },
-  brother: { category: 'family', generationOffset: 0, symmetric: true },
-  sister: { category: 'family', generationOffset: 0, symmetric: true },
-  married: { category: 'romantic', generationOffset: 0, symmetric: true },
-  engaged: { category: 'romantic', generationOffset: 0, symmetric: true },
-  relationship: { category: 'romantic', generationOffset: 0, symmetric: true },
-  former_relationship: { category: 'romantic', generationOffset: 0, symmetric: true },
-  divorced: { category: 'romantic', generationOffset: 0, symmetric: true },
-  other: { category: 'other', generationOffset: 0, symmetric: true },
+  father: { category: "family", generationOffset: -1, symmetric: false },
+  mother: { category: "family", generationOffset: -1, symmetric: false },
+  son: { category: "family", generationOffset: 1, symmetric: false },
+  daughter: { category: "family", generationOffset: 1, symmetric: false },
+  brother: { category: "family", generationOffset: 0, symmetric: true },
+  sister: { category: "family", generationOffset: 0, symmetric: true },
+  married: { category: "romantic", generationOffset: 0, symmetric: true },
+  engaged: { category: "romantic", generationOffset: 0, symmetric: true },
+  relationship: { category: "romantic", generationOffset: 0, symmetric: true },
+  former_relationship: {
+    category: "romantic",
+    generationOffset: 0,
+    symmetric: true,
+  },
+  divorced: { category: "romantic", generationOffset: 0, symmetric: true },
+  other: { category: "other", generationOffset: 0, symmetric: true },
 };
 
 /** User-facing, editable attributes of a relationship (plain view). */

@@ -1,5 +1,5 @@
-import type { UserId } from '../shared/ids';
-import type { Base64, EncryptedPayload, KeyEnvelope } from '../security/types';
+import type { UserId } from "../shared/ids";
+import type { Base64, EncryptedPayload, KeyEnvelope } from "../security/types";
 
 /** Sensitive, user-editable data. Stored ONLY encrypted inside `UserAccountRecord`. */
 export interface UserProfile {

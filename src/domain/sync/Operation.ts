@@ -5,10 +5,10 @@ import type {
   OperationId,
   RelationshipId,
   UserId,
-} from '../shared/ids';
-import type { HlcTimestamp } from '../shared/hlc';
-import type { FamilyMemberFields } from '../family/FamilyMember';
-import type { RelationshipFields } from '../family/Relationship';
+} from "../shared/ids";
+import type { HlcTimestamp } from "../shared/hlc";
+import type { FamilyMemberFields } from "../family/FamilyMember";
+import type { RelationshipFields } from "../family/Relationship";
 
 /**
  * Every edit is an immutable operation appended to the author device's own log
@@ -27,47 +27,47 @@ interface BaseOperation {
 }
 
 export interface CreateMemberOperation extends BaseOperation {
-  readonly type: 'member.create';
+  readonly type: "member.create";
   readonly memberId: FamilyMemberId;
   readonly fields: FamilyMemberFields;
 }
 export interface UpdateMemberOperation extends BaseOperation {
-  readonly type: 'member.update';
+  readonly type: "member.update";
   readonly memberId: FamilyMemberId;
   readonly patch: Partial<FamilyMemberFields>;
 }
 export interface DeleteMemberOperation extends BaseOperation {
-  readonly type: 'member.delete';
+  readonly type: "member.delete";
   readonly memberId: FamilyMemberId;
 }
 
 export interface CreateRelationshipOperation extends BaseOperation {
-  readonly type: 'relationship.create';
+  readonly type: "relationship.create";
   readonly relationshipId: RelationshipId;
   readonly fromId: FamilyMemberId;
   readonly toId: FamilyMemberId;
   readonly fields: RelationshipFields;
 }
 export interface UpdateRelationshipOperation extends BaseOperation {
-  readonly type: 'relationship.update';
+  readonly type: "relationship.update";
   readonly relationshipId: RelationshipId;
   readonly patch: Partial<RelationshipFields>;
 }
 export interface DeleteRelationshipOperation extends BaseOperation {
-  readonly type: 'relationship.delete';
+  readonly type: "relationship.delete";
   readonly relationshipId: RelationshipId;
 }
 
 export interface RenameTreeOperation extends BaseOperation {
-  readonly type: 'tree.rename';
+  readonly type: "tree.rename";
   readonly name: string;
 }
 export interface SetRootOperation extends BaseOperation {
-  readonly type: 'tree.setRoot';
+  readonly type: "tree.setRoot";
   readonly rootPersonId: FamilyMemberId | null;
 }
 export interface DeleteTreeOperation extends BaseOperation {
-  readonly type: 'tree.delete';
+  readonly type: "tree.delete";
 }
 
 export type Operation =
@@ -81,4 +81,4 @@ export type Operation =
   | SetRootOperation
   | DeleteTreeOperation;
 
-export type OperationType = Operation['type'];
+export type OperationType = Operation["type"];

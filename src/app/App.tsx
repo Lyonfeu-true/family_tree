@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import type { ReactElement } from "react";
 
 /**
  * Composition root. In later phases this builds the infrastructure adapters, injects

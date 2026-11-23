@@ -1,4 +1,4 @@
-import type { KdfParams } from './types';
+import type { KdfParams } from "./types";
 
 /** Parameters used for NEW envelopes. Chosen above the OWASP minimums. */
 export const ARGON2ID_DEFAULTS = {
@@ -27,21 +27,24 @@ export const KDF_BOUNDS = {
   pbkdf2: { iterations: { min: 600_000, max: 5_000_000 } },
 } as const;
 
-const inRange = (value: number, range: { readonly min: number; readonly max: number }): boolean =>
+const inRange = (
+  value: number,
+  range: { readonly min: number; readonly max: number },
+): boolean =>
   Number.isInteger(value) && value >= range.min && value <= range.max;
 
 export function isKdfParamsAcceptable(params: KdfParams): boolean {
   if (params.salt.length < MIN_SALT_BASE64_LENGTH) return false;
   switch (params.kdf) {
-    case 'argon2id':
+    case "argon2id":
       return (
         inRange(params.memoryKiB, KDF_BOUNDS.argon2id.memoryKiB) &&
         inRange(params.iterations, KDF_BOUNDS.argon2id.iterations) &&
         inRange(params.parallelism, KDF_BOUNDS.argon2id.parallelism)
       );
-    case 'pbkdf2-sha256':
+    case "pbkdf2-sha256":
       return inRange(params.iterations, KDF_BOUNDS.pbkdf2.iterations);
-    case 'hkdf-sha256':
+    case "hkdf-sha256":
       return true;
   }
 }

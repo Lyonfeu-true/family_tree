@@ -4,11 +4,11 @@ Status: Phase 3 design. Implementation follows in the core and synchronization p
 
 ## 1. Assets and goals
 
-| Asset | Examples | Goal |
-|---|---|---|
-| Family data | names, dates, notes, photos, relationships | Confidentiality, integrity |
-| Keys | account key, private key, tree keys | Never leave the device in usable form |
-| Secrets | passwords, recovery code, GitHub token | Never stored or transmitted in plaintext |
+| Asset       | Examples                                   | Goal                                     |
+| ----------- | ------------------------------------------ | ---------------------------------------- |
+| Family data | names, dates, notes, photos, relationships | Confidentiality, integrity               |
+| Keys        | account key, private key, tree keys        | Never leave the device in usable form    |
+| Secrets     | passwords, recovery code, GitHub token     | Never stored or transmitted in plaintext |
 
 Goal: a party who obtains the entire repository, and the hosting account's logs, learns nothing about the family beyond coarse metadata.
 
@@ -22,19 +22,19 @@ Goal: a party who obtains the entire repository, and the hosting account's logs,
 
 ## 3. Threat model
 
-| ID | Adversary | Capability | Mitigations | Residual risk |
-|---|---|---|---|---|
-| A1 | Passive repository reader (GitHub, breach, leaked read token) | Sees all repo files, commit times, sizes | AES-256-GCM everywhere; random file names; no plaintext logins | Metadata: number of users/trees/devices, activity times, photo sizes |
-| A2 | Active repository writer (stolen write token) | Delete, truncate, roll back, replay, corrupt files; add junk accounts | AEAD with AAD binding (cannot forge or move ciphertext); per-device seq numbers detect truncation/rollback; git history allows recovery; accounts without grants read nothing | Denial of service and rollback to an older valid state until noticed |
-| A3 | Hosting or supply-chain compromise (Cloudflare account takeover, malicious npm package) | Serve modified JS that steals the password | Strict CSP, pinned lockfile, `npm ci`, few dependencies, CI-only deploys, 2FA on GitHub and Cloudflare, branch protection | **Cannot be eliminated.** Mitigate with operational hygiene |
-| A4 | XSS via stored data (names, notes, CSV import) | Run script in the app origin and use unlocked keys | React escaping, no `dangerouslySetInnerHTML`, notes rendered as text, CSP without `unsafe-inline`/`unsafe-eval`, Trusted Types, strict CSV parsing, spreadsheet-formula neutralisation on export | A CSP bypass in a dependency |
-| A5 | Lost or stolen device | Reads IndexedDB offline | Local state, token and keys are encrypted at rest; keys held only in memory; auto-lock | An unlocked, unattended session is exposed |
-| A6 | Offline password cracker | Has account envelope from the repo | Argon2id 64 MiB x3 (PBKDF2 600k fallback), password strength gate, optional passphrase guidance | A weak password falls; this is the main cryptographic dependency |
-| A7 | Removed or departed member | Keeps old keys, old token, git history | Rotation of the tree key; token revocation by repo owner | **Everything up to rotation stays readable to them forever** |
-| A8 | Insider mistakes or malice | A member writes bad or forged operations | Trusted-user assumption; HLC future-skew rejection; git history | Operations are not individually signed, so `authorId` is not authenticated |
-| A9 | Phishing / look-alike domain | User types password into a fake site | Dedicated custom domain, HSTS preload | Human factor |
-| A10 | Network attacker | MITM | HTTPS, HSTS, `connect-src` limited to `api.github.com` | None beyond TLS |
-| A11 | Malicious import file | Oversized, malformed or formula-laden CSV | Size and row limits, schema validation, no HTML rendering, CSV export prefixes `= + - @` cells with `'` | Resource exhaustion on very large files |
+| ID  | Adversary                                                                               | Capability                                                            | Mitigations                                                                                                                                                                                      | Residual risk                                                              |
+| --- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| A1  | Passive repository reader (GitHub, breach, leaked read token)                           | Sees all repo files, commit times, sizes                              | AES-256-GCM everywhere; random file names; no plaintext logins                                                                                                                                   | Metadata: number of users/trees/devices, activity times, photo sizes       |
+| A2  | Active repository writer (stolen write token)                                           | Delete, truncate, roll back, replay, corrupt files; add junk accounts | AEAD with AAD binding (cannot forge or move ciphertext); per-device seq numbers detect truncation/rollback; git history allows recovery; accounts without grants read nothing                    | Denial of service and rollback to an older valid state until noticed       |
+| A3  | Hosting or supply-chain compromise (Cloudflare account takeover, malicious npm package) | Serve modified JS that steals the password                            | Strict CSP, pinned lockfile, `npm ci`, few dependencies, CI-only deploys, 2FA on GitHub and Cloudflare, branch protection                                                                        | **Cannot be eliminated.** Mitigate with operational hygiene                |
+| A4  | XSS via stored data (names, notes, CSV import)                                          | Run script in the app origin and use unlocked keys                    | React escaping, no `dangerouslySetInnerHTML`, notes rendered as text, CSP without `unsafe-inline`/`unsafe-eval`, Trusted Types, strict CSV parsing, spreadsheet-formula neutralisation on export | A CSP bypass in a dependency                                               |
+| A5  | Lost or stolen device                                                                   | Reads IndexedDB offline                                               | Local state, token and keys are encrypted at rest; keys held only in memory; auto-lock                                                                                                           | An unlocked, unattended session is exposed                                 |
+| A6  | Offline password cracker                                                                | Has account envelope from the repo                                    | Argon2id 64 MiB x3 (PBKDF2 600k fallback), password strength gate, optional passphrase guidance                                                                                                  | A weak password falls; this is the main cryptographic dependency           |
+| A7  | Removed or departed member                                                              | Keeps old keys, old token, git history                                | Rotation of the tree key; token revocation by repo owner                                                                                                                                         | **Everything up to rotation stays readable to them forever**               |
+| A8  | Insider mistakes or malice                                                              | A member writes bad or forged operations                              | Trusted-user assumption; HLC future-skew rejection; git history                                                                                                                                  | Operations are not individually signed, so `authorId` is not authenticated |
+| A9  | Phishing / look-alike domain                                                            | User types password into a fake site                                  | Dedicated custom domain, HSTS preload                                                                                                                                                            | Human factor                                                               |
+| A10 | Network attacker                                                                        | MITM                                                                  | HTTPS, HSTS, `connect-src` limited to `api.github.com`                                                                                                                                           | None beyond TLS                                                            |
+| A11 | Malicious import file                                                                   | Oversized, malformed or formula-laden CSV                             | Size and row limits, schema validation, no HTML rendering, CSV export prefixes `= + - @` cells with `'`                                                                                          | Resource exhaustion on very large files                                    |
 
 Out of scope: malware on the user's device, malicious browser extensions, coercion, side channels in the CPU or browser.
 
@@ -53,6 +53,7 @@ tree key (random 256-bit AES, versioned)
 ```
 
 Design rules:
+
 - **Random keys, derived wrappers.** Passwords only unlock a random AccountKey. Changing the password re-wraps one key and re-encrypts nothing else.
 - **Per-purpose AAD** (`domain/security/aad.ts`) binds each ciphertext to tree, key version, file and user.
 - **Fresh 96-bit random IV** for every encryption. Volume is far below the 2^32 messages-per-key limit that makes random IVs unsafe; rotation resets the counter anyway.
@@ -60,14 +61,14 @@ Design rules:
 
 ### Parameters
 
-| Item | Choice | Reason |
-|---|---|---|
-| Password KDF | Argon2id, 64 MiB, 3 iterations, 1 lane (`hash-wasm`) | Memory-hard, above OWASP minimum, still ~1-2 s on phones |
-| KDF fallback | PBKDF2-HMAC-SHA256, 600,000 iterations (native WebCrypto) | Only if WASM is unavailable. The envelope records which was used |
-| Recovery code | 160 random bits, Base32, HKDF-SHA256 | High entropy, so no slow KDF needed |
-| Symmetric cipher | AES-256-GCM | WebCrypto native, authenticated |
-| Key sharing | ECDH P-256 + HKDF + AES-GCM (sealed box) | P-256 is supported by every browser; X25519 is not yet universal |
-| Bounds on read | Reject KDF params outside `KDF_BOUNDS` | Stops weakened or memory-bomb envelopes (`kdfPolicy.ts`) |
+| Item             | Choice                                                    | Reason                                                           |
+| ---------------- | --------------------------------------------------------- | ---------------------------------------------------------------- |
+| Password KDF     | Argon2id, 64 MiB, 3 iterations, 1 lane (`hash-wasm`)      | Memory-hard, above OWASP minimum, still ~1-2 s on phones         |
+| KDF fallback     | PBKDF2-HMAC-SHA256, 600,000 iterations (native WebCrypto) | Only if WASM is unavailable. The envelope records which was used |
+| Recovery code    | 160 random bits, Base32, HKDF-SHA256                      | High entropy, so no slow KDF needed                              |
+| Symmetric cipher | AES-256-GCM                                               | WebCrypto native, authenticated                                  |
+| Key sharing      | ECDH P-256 + HKDF + AES-GCM (sealed box)                  | P-256 is supported by every browser; X25519 is not yet universal |
+| Bounds on read   | Reject KDF params outside `KDF_BOUNDS`                    | Stops weakened or memory-bomb envelopes (`kdfPolicy.ts`)         |
 
 Password policy: at least 12 characters and a strength estimate of 3/4 or better (lazy-loaded `@zxcvbn-ts/core`). Recommend a 5+ word passphrase.
 
@@ -91,10 +92,10 @@ Password policy: at least 12 characters and a strength estimate of 3/4 or better
 
 Tree keys are distributed with public-key sealing, not invite codes.
 
-| Option | Pros | Cons |
-|---|---|---|
-| Invite code sent out of band | Simple, no public keys | Cannot re-grant after rotation without a new code for every user; code leakage grants the key |
-| **Public-key grants (chosen)** | Any key holder can grant or re-grant without the recipient being online; rotation works naturally | Needs key verification to stop key substitution |
+| Option                         | Pros                                                                                              | Cons                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Invite code sent out of band   | Simple, no public keys                                                                            | Cannot re-grant after rotation without a new code for every user; code leakage grants the key |
+| **Public-key grants (chosen)** | Any key holder can grant or re-grant without the recipient being online; rotation works naturally | Needs key verification to stop key substitution                                               |
 
 **Granting access.** The new user registers an account (public key only, no access yet). An existing member sees them as "pending" with a **fingerprint** and must confirm it with the person over another channel (phone, in person) before sealing the tree key to that public key. This prevents an attacker with write access from injecting their own account and being approved blindly.
 
@@ -131,6 +132,7 @@ Device (IndexedDB), all encrypted: cached account records (already wrapped), `Sy
 ## 9. Browser hardening
 
 `public/_headers` (Cloudflare Pages) sets:
+
 - CSP: `default-src 'none'`; scripts from self plus `'wasm-unsafe-eval'` (needed only for Argon2 WASM, not for `eval`); `connect-src` limited to self and `api.github.com`; no framing; `require-trusted-types-for 'script'`.
 - HSTS with preload, `nosniff`, `Referrer-Policy: no-referrer`, COOP/CORP same-origin, minimal `Permissions-Policy`, `noindex`.
 

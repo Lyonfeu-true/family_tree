@@ -1,4 +1,4 @@
-import type { Brand } from './ids';
+import type { Brand } from "./ids";
 
 /**
  * Hybrid Logical Clock timestamp, serialised as a fixed-width string:
@@ -11,7 +11,7 @@ import type { Brand } from './ids';
  * deterministic total order on every device, which is what makes the merge
  * commutative. Tick/receive/compare helpers arrive in the synchronization phase.
  */
-export type HlcTimestamp = Brand<string, 'HlcTimestamp'>;
+export type HlcTimestamp = Brand<string, "HlcTimestamp">;
 
 /** Last-writer-wins register: a value plus the clock of the write that set it. */
 export interface Lww<T> {
