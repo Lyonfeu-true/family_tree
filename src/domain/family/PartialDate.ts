@@ -1,5 +1,5 @@
 import type { Brand } from '../shared/ids';
- 
+
 /**
  * ISO-8601 date with optional precision: `YYYY`, `YYYY-MM` or `YYYY-MM-DD`.
  *
@@ -8,4 +8,3 @@ import type { Brand } from '../shared/ids';
  * Validation lives in `parsePartialDate` (added with the use cases).
  */
 export type PartialDate = Brand<string, 'PartialDate'>;
- 

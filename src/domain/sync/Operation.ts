@@ -9,7 +9,7 @@ import type {
 import type { HlcTimestamp } from '../shared/hlc';
 import type { FamilyMemberFields } from '../family/FamilyMember';
 import type { RelationshipFields } from '../family/Relationship';
- 
+
 /**
  * Every edit is an immutable operation appended to the author device's own log
  * file. Applying an operation sets each field it touches to (value, op.hlc) only if
@@ -25,7 +25,7 @@ interface BaseOperation {
   readonly seq: number;
   readonly hlc: HlcTimestamp;
 }
- 
+
 export interface CreateMemberOperation extends BaseOperation {
   readonly type: 'member.create';
   readonly memberId: FamilyMemberId;
@@ -40,7 +40,7 @@ export interface DeleteMemberOperation extends BaseOperation {
   readonly type: 'member.delete';
   readonly memberId: FamilyMemberId;
 }
- 
+
 export interface CreateRelationshipOperation extends BaseOperation {
   readonly type: 'relationship.create';
   readonly relationshipId: RelationshipId;
@@ -57,7 +57,7 @@ export interface DeleteRelationshipOperation extends BaseOperation {
   readonly type: 'relationship.delete';
   readonly relationshipId: RelationshipId;
 }
- 
+
 export interface RenameTreeOperation extends BaseOperation {
   readonly type: 'tree.rename';
   readonly name: string;
@@ -69,7 +69,7 @@ export interface SetRootOperation extends BaseOperation {
 export interface DeleteTreeOperation extends BaseOperation {
   readonly type: 'tree.delete';
 }
- 
+
 export type Operation =
   | CreateMemberOperation
   | UpdateMemberOperation
@@ -80,6 +80,5 @@ export type Operation =
   | RenameTreeOperation
   | SetRootOperation
   | DeleteTreeOperation;
- 
+
 export type OperationType = Operation['type'];
- 

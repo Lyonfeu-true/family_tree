@@ -1,5 +1,5 @@
 import type { DeviceId, FamilyTreeId, PhotoId, UserId } from '../shared/ids';
- 
+
 /**
  * Additional Authenticated Data builders.
  *
@@ -9,7 +9,7 @@ import type { DeviceId, FamilyTreeId, PhotoId, UserId } from '../shared/ids';
  * Every call site uses these builders, never ad-hoc strings.
  */
 const P = 'ft1'; // format prefix, bump when the AAD scheme changes
- 
+
 export const aad = {
   accountKey: (user: UserId): string => `${P}|account-key|${user}`,
   recoveryKey: (user: UserId): string => `${P}|recovery-key|${user}`,
@@ -34,4 +34,3 @@ export const aad = {
   localState: (tree: FamilyTreeId, version: number): string =>
     `${P}|local-state|${tree}|${version}`,
 } as const;
- 

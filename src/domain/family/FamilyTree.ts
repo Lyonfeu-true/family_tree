@@ -2,7 +2,7 @@ import type { FamilyMemberId, FamilyTreeId, RelationshipId } from '../shared/ids
 import type { HlcTimestamp, LwwRecord } from '../shared/hlc';
 import type { FamilyMemberRecord } from './FamilyMember';
 import type { RelationshipRecord } from './Relationship';
- 
+
 export interface FamilyTreeFields {
   readonly name: string;
   /**
@@ -12,19 +12,19 @@ export interface FamilyTreeFields {
    */
   readonly rootPersonId: FamilyMemberId | null;
 }
- 
+
 /** Plain view used by the UI and use cases. */
 export interface FamilyTree extends FamilyTreeFields {
   readonly id: FamilyTreeId;
 }
- 
+
 export interface FamilyTreeRecord {
   readonly id: FamilyTreeId;
   readonly createdAt: HlcTimestamp;
   readonly fields: LwwRecord<FamilyTreeFields>;
   readonly deletedAt: HlcTimestamp | null;
 }
- 
+
 /**
  * Complete replicated state of one tree. This is what IndexedDB persists and what
  * snapshots encrypt. Keys are the entity ids (plain strings so it serialises to JSON).
@@ -39,6 +39,5 @@ export interface FamilyTreeState {
   readonly members: Readonly<Record<string, FamilyMemberRecord>>;
   readonly relationships: Readonly<Record<string, RelationshipRecord>>;
 }
- 
+
 export type { RelationshipId };
- 

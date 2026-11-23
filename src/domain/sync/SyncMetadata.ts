@@ -1,14 +1,14 @@
 import type { DeviceId, FamilyTreeId } from '../shared/ids';
 import type { HlcTimestamp } from '../shared/hlc';
- 
+
 export type SyncStatus = 'idle' | 'syncing' | 'offline' | 'error';
- 
+
 /** Identifies one remote file and the version we last saw (GitHub blob SHA). */
 export interface RemoteFileRef {
   readonly path: string;
   readonly sha: string;
 }
- 
+
 /**
  * Local bookkeeping for one tree on one device. Persisted in IndexedDB, never synced.
  */
@@ -27,7 +27,7 @@ export interface TreeSyncState {
   readonly lastSyncedAt: string | null;
   readonly status: SyncStatus;
 }
- 
+
 /**
  * Describes a compacted snapshot that replaces old log entries.
  * Logs may only be truncated once every known device has applied past `coversUpTo`.
@@ -40,11 +40,10 @@ export interface SnapshotMeta {
   readonly coversUpTo: Readonly<Record<string, number>>;
   readonly keyVersion: number;
 }
- 
+
 /** A device registered to sync a tree (shown in settings, used for compaction safety). */
 export interface DeviceInfo {
   readonly deviceId: DeviceId;
   readonly label: string;
   readonly registeredAt: string;
 }
- 

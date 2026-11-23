@@ -1,7 +1,7 @@
 import type { FamilyMemberId, FamilyTreeId, PhotoId } from '../shared/ids';
 import type { HlcTimestamp, LwwRecord } from '../shared/hlc';
 import type { PartialDate } from './PartialDate';
- 
+
 export const RELATIONSHIP_STATUSES = [
   'single',
   'in_relationship',
@@ -10,9 +10,9 @@ export const RELATIONSHIP_STATUSES = [
   'divorced',
   'widowed',
 ] as const;
- 
+
 export type RelationshipStatus = (typeof RELATIONSHIP_STATUSES)[number];
- 
+
 /** User-editable attributes. Only `name` is required. */
 export interface FamilyMemberFields {
   /** Non-empty after trimming. */
@@ -25,13 +25,13 @@ export interface FamilyMemberFields {
   readonly notes: string;
   readonly relationshipStatus: RelationshipStatus | null;
 }
- 
+
 /** Plain view used by the UI and use cases. */
 export interface FamilyMember extends FamilyMemberFields {
   readonly id: FamilyMemberId;
   readonly treeId: FamilyTreeId;
 }
- 
+
 /** Replicated (synchronised) representation: every field is its own LWW register. */
 export interface FamilyMemberRecord {
   readonly id: FamilyMemberId;
@@ -41,4 +41,3 @@ export interface FamilyMemberRecord {
   /** Tombstone. Delete wins over concurrent edits and is never undone. */
   readonly deletedAt: HlcTimestamp | null;
 }
- 

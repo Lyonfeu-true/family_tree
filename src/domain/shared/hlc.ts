@@ -1,5 +1,5 @@
 import type { Brand } from './ids';
- 
+
 /**
  * Hybrid Logical Clock timestamp, serialised as a fixed-width string:
  *
@@ -12,13 +12,12 @@ import type { Brand } from './ids';
  * commutative. Tick/receive/compare helpers arrive in the synchronization phase.
  */
 export type HlcTimestamp = Brand<string, 'HlcTimestamp'>;
- 
+
 /** Last-writer-wins register: a value plus the clock of the write that set it. */
 export interface Lww<T> {
   readonly value: T;
   readonly hlc: HlcTimestamp;
 }
- 
+
 /** Maps every field of T to an LWW register of that field's type. */
 export type LwwRecord<T> = { readonly [K in keyof T]: Lww<T[K]> };
- 
