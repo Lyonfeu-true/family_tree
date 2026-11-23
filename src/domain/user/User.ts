@@ -1,29 +1,41 @@
 import type { UserId } from '../shared/ids';
-import type { KeyEnvelope, TreeKeyGrant } from '../security/types';
+import type { Base64, EncryptedPayload, KeyEnvelope } from '../security/types';
  
-/**
- * There is no server, so an "account" is a vault entry, not a password record.
- *  - No password or password hash is stored anywhere.
- *  - "Login" = deriving a key from the password and successfully unwrapping
- *    `passwordEnvelope` (AES-GCM authentication fails on a wrong password).
- *  - "Change password" = re-wrap the account key under a new envelope.
- *  - "Change login" = update `login` only; the key material is unaffected.
- *  - "Delete account" = remove this entry and its grants.
- *
- * PROVISIONAL: how a login is located on a fresh device, and how entries are
- * shared across devices, is finalised in Phase 3 (security design).
- */
-export interface UserAccount {
-  readonly id: UserId;
-  /** Email or username. Changeable. */
+/** Sensitive, user-editable data. Stored ONLY encrypted inside `UserAccountRecord`. */
+export interface UserProfile {
+  /** Email or username. Changeable. Compared after normalisation (see login.ts). */
   readonly login: string;
   readonly displayName: string;
+}
+ 
+/** Decrypted view used by the UI once someone is logged in. */
+export interface User extends UserProfile {
+  readonly id: UserId;
+  readonly publicKey: Base64;
+}
+ 
+/**
+ * What is stored locally and in the repository (`vault/accounts/<id>.json`).
+ * Written only by its owner. Contains no login, no password and no password hash.
+ *
+ *   password ──KDF──▶ passwordKey ──unwraps──▶ AccountKey
+ *   AccountKey ──decrypts──▶ privateKey, profile
+ *
+ * Login = unwrap succeeds AND decrypted profile.login matches what was typed.
+ * Both failures show the same generic error.
+ */
+export interface UserAccountRecord {
+  readonly id: UserId;
   /** ISO-8601 instant. */
   readonly createdAt: string;
-  /** Wraps the account key; unlocked by the password. */
+  /** ECDH P-256 public key, SPKI DER. Public by design; used by others to share keys. */
+  readonly publicKey: Base64;
   readonly passwordEnvelope: KeyEnvelope;
-  /** Optional wrap of the same account key under a printed recovery code. */
+  /** The same AccountKey wrapped under the recovery code. Null if the user opted out. */
   readonly recoveryEnvelope: KeyEnvelope | null;
-  readonly treeKeyGrants: readonly TreeKeyGrant[];
+  /** PKCS#8 private key encrypted under the AccountKey. */
+  readonly encryptedPrivateKey: EncryptedPayload;
+  /** `UserProfile` JSON encrypted under the AccountKey. */
+  readonly encryptedProfile: EncryptedPayload;
 }
  
