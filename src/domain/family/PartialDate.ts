@@ -1,4 +1,4 @@
-import type { Brand } from "../shared/ids";
+import type { Brand } from '../shared/ids';
 
 /**
  * ISO-8601 date with optional precision: `YYYY`, `YYYY-MM` or `YYYY-MM-DD`.
@@ -7,4 +7,4 @@ import type { Brand } from "../shared/ids";
  * users to invent data. Strings sort correctly and survive CSV round trips.
  * Validation lives in `parsePartialDate` (added with the use cases).
  */
-export type PartialDate = Brand<string, "PartialDate">;
+export type PartialDate = Brand<string, 'PartialDate'>;

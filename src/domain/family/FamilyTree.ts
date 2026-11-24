@@ -1,11 +1,8 @@
-import type {
-  FamilyMemberId,
-  FamilyTreeId,
-  RelationshipId,
-} from "../shared/ids";
-import type { HlcTimestamp, LwwRecord } from "../shared/hlc";
-import type { FamilyMemberRecord } from "./FamilyMember";
-import type { RelationshipRecord } from "./Relationship";
+import type { FamilyMemberId, FamilyTreeId, RelationshipId } from '../shared/ids';
+import type { HlcTimestamp } from '../shared/hlc';
+import type { LwwRecord } from '../shared/lww';
+import type { FamilyMemberRecord } from './FamilyMember';
+import type { RelationshipRecord } from './Relationship';
 
 export interface FamilyTreeFields {
   readonly name: string;

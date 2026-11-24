@@ -1,14 +1,15 @@
-import type { FamilyMemberId, FamilyTreeId, PhotoId } from "../shared/ids";
-import type { HlcTimestamp, LwwRecord } from "../shared/hlc";
-import type { PartialDate } from "./PartialDate";
+import type { FamilyMemberId, FamilyTreeId, PhotoId } from '../shared/ids';
+import type { HlcTimestamp } from '../shared/hlc';
+import type { LwwRecord } from '../shared/lww';
+import type { PartialDate } from './PartialDate';
 
 export const RELATIONSHIP_STATUSES = [
-  "single",
-  "in_relationship",
-  "engaged",
-  "married",
-  "divorced",
-  "widowed",
+  'single',
+  'in_relationship',
+  'engaged',
+  'married',
+  'divorced',
+  'widowed',
 ] as const;
 
 export type RelationshipStatus = (typeof RELATIONSHIP_STATUSES)[number];

@@ -27,10 +27,10 @@ Dependency install scripts are disabled in `.npmrc` on purpose. If a future pack
 
 ## Status
 
-| Phase               | State   |
-| ------------------- | ------- |
-| 1 Architecture      | done    |
-| 2 Data model        | done    |
-| 3 Security design   | done    |
-| 4 Project structure | done    |
-| 5-10                | pending |
+| Phase | State |
+|---|---|
+| 1 Architecture | done |
+| 2 Data model | done |
+| 3 Security design | done |
+| 4 Project structure | done |
+| 5-10 | pending |
